@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-forest-deep: #062016;
+    --color-forest-medium: #0B3D2E;
+    --color-forest-sage: #18A558;
+    --color-sprout-green: #A8D94C;
+    --color-harvest-amber: #d97706;
+    --color-earth-soil: #78350f;
+    --color-bg-canvas: #f8faf7;
+    --color-card-bg: #ffffff;
+    --color-border-subtle: #e5e7eb;
+    --color-border-nature: #d1fae5;
+    --color-text-main: #0f172a;
+    --color-text-muted: #475569;
+  }
+
+  * {
+    border-color: var(--color-border-subtle);
+  }
+
+  body {
+    background-color: #f8faf7;
+    background-image: 
+      radial-gradient(circle at 10% 5%, rgba(11, 61, 46, 0.03), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(24, 165, 88, 0.025), transparent 45%),
+      radial-gradient(circle at 50% 50%, #f8faf7, #f1f5ef);
+    background-attachment: fixed;
+    color: #0f172a;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* UI/UX Pro Max Surface & Elevation Hierarchy */
+.pro-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+}
+
+.pro-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(6, 32, 22, 0.08), 0 8px 10px -6px rgba(6, 32, 22, 0.04);
+}
+
+.pro-card-accent {
+  background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 4px 15px -3px rgba(24, 165, 88, 0.08);
+}
+
+/* Custom Sleek Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
