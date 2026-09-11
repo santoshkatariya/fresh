@@ -427,8 +427,9 @@ Focus on why direct buyer dispatch to city quick-commerce/retail is superior to 
       },
     ];
 
+    const safeCropName = (cropName || '').toLowerCase();
     const match = defaultRegistry.find(
-      (c) => c.crop.toLowerCase() === cropName.toLowerCase() || cropName.toLowerCase().includes(c.crop.toLowerCase())
+      (c) => (c.crop || '').toLowerCase() === safeCropName || safeCropName.includes((c.crop || '').toLowerCase())
     );
     return match || defaultRegistry[0];
   }
@@ -438,7 +439,10 @@ Focus on why direct buyer dispatch to city quick-commerce/retail is superior to 
   // ==========================================
   app.post('/api/auth/login', (req, res) => {
     const { email, phone, role = 'farmer' } = req.body;
-    let user = db.findUser(u => (email && u.email.toLowerCase() === email.toLowerCase()) || (phone && u.phone === phone));
+    let user = db.findUser(u => 
+      (email && u.email && u.email.toLowerCase() === String(email).toLowerCase()) || 
+      (phone && u.phone && u.phone === phone)
+    );
 
     if (!user) {
       // Auto-create user for frictionless login & demo
@@ -566,13 +570,14 @@ Focus on why direct buyer dispatch to city quick-commerce/retail is superior to 
     const { crop, status, farmerId } = req.query;
 
     if (crop) {
-      batches = batches.filter(b => b.crop.toLowerCase() === String(crop).toLowerCase());
+      const targetCrop = String(crop).toLowerCase();
+      batches = batches.filter(b => b && String(b.crop || '').toLowerCase() === targetCrop);
     }
     if (status) {
-      batches = batches.filter(b => b.status === status);
+      batches = batches.filter(b => b && b.status === status);
     }
     if (farmerId) {
-      batches = batches.filter(b => b.farmerId === farmerId);
+      batches = batches.filter(b => b && b.farmerId === farmerId);
     }
 
     return res.json({
@@ -661,8 +666,9 @@ Focus on why direct buyer dispatch to city quick-commerce/retail is superior to 
     const qScore = Number(qualityScore) || 80;
 
     const matches = buyers.map(buyer => {
-      const cropMatch = buyer.demandedCrops.some(
-        c => c.toLowerCase() === String(crop).toLowerCase() || String(crop).toLowerCase().includes(c.toLowerCase())
+      const targetCrop = String(crop).toLowerCase();
+      const cropMatch = (buyer.demandedCrops || []).some(
+        c => (c || '').toLowerCase() === targetCrop || targetCrop.includes((c || '').toLowerCase())
       );
       const meetsQuality = qScore >= buyer.minQualityScore;
       let calculatedScore = buyer.aiMatchScore;
@@ -831,7 +837,7 @@ Focus on why direct buyer dispatch to city quick-commerce/retail is superior to 
 
       if (!ai) {
         // Domain fallback when Gemini API key is not configured yet
-        const q = query.toLowerCase();
+        const q = String(query || '').toLowerCase();
         let fallbackAnswer = '';
         let actionTab = 'dashboard';
 
@@ -892,7 +898,7 @@ Keep the tone supportive, simple, and rural-friendly without technical jargon.`;
 
       // Determine recommended action tab
       let actionTab = 'dashboard';
-      const q = query.toLowerCase();
+      const q = String(query || '').toLowerCase();
       if (q.includes('mandi') || q.includes('मंडी') || q.includes('ಮಂಡಿ') || q.includes('price')) actionTab = 'mandi-rates';
       else if (q.includes('sell') || q.includes('wait') || q.includes('decision')) actionTab = 'decisions';
       else if (q.includes('route') || q.includes('transport') || q.includes('map')) actionTab = 'routes';

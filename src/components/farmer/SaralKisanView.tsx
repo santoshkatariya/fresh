@@ -176,9 +176,17 @@ export const SaralKisanView: React.FC<SaralKisanViewProps> = ({
 
   const processVoiceCommand = (cmd: string) => {
     let reply = '';
-    const lower = cmd.toLowerCase();
+    const lower = (cmd || '').toLowerCase();
 
-    if (lower.includes('mandi') || lower.includes('ದರ') || lower.includes('भाव') || lower.includes('rate')) {
+    if (lower.includes('camera') || lower.includes('ಕ್ಯಾಮೆರಾ') || lower.includes('कैमरा') || lower.includes('black') || lower.includes('screen')) {
+      reply =
+        lang === 'kn'
+          ? `ಕ್ಯಾಮೆರಾ ತೆರೆಯಲು ಬ್ರೌಸರ್‌ನಲ್ಲಿ 'Allow' ಅನುಮತಿ ನೀಡಿ. ಅಥವಾ ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿರುವ ವರ್ಚುವಲ್ ಕ್ಯಾಮೆರಾ ಬಳಸಿ. ಈಗ ಕ್ಯಾಮೆರಾ ತೆರೆಯಲಾಗುತ್ತಿದೆ.`
+          : lang === 'hi'
+          ? `कैमरा चालू करने के लिए ब्राउज़र में 'Allow' करें या वर्चुअल कैमरा चलाएं। अभी कैमरा खोला जा रहा है।`
+          : `To fix camera, allow permissions in your browser or use our Virtual Field Camera. Opening scanner now.`;
+      setTimeout(() => onNavigateTab('scanner'), 1500);
+    } else if (lower.includes('mandi') || lower.includes('ದರ') || lower.includes('भाव') || lower.includes('rate')) {
       reply =
         lang === 'kn'
           ? `ಇಂದು ಮಂಡಿಯಲ್ಲಿ ಟೊಮೇಟೊ ಕೇವಲ ₹${mandiTakeHomePerKg.toFixed(1)}/ಕೆಜಿ ಸಿಗುತ್ತದೆ. ನಮ್ಮಲ್ಲಿ ನೇರ ಮಾರಾಟ ಮಾಡಿದರೆ ₹${directTakeHomePerKg.toFixed(1)}/ಕೆಜಿ ಸಿಗುತ್ತದೆ. ನಿಮಗೆ ₹${extraCashEarned.toLocaleString('en-IN')} ಹೆಚ್ಚು ಲಾಭ!`
@@ -566,6 +574,12 @@ export const SaralKisanView: React.FC<SaralKisanViewProps> = ({
 
         {/* Voice suggestions */}
         <div className="flex flex-wrap gap-2 pt-1">
+          <button
+            onClick={() => processVoiceCommand('camera help')}
+            className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-all text-left"
+          >
+            {lang === 'kn' ? '📸 ಕ್ಯಾಮೆರಾ ಸಹಾಯ / ಕಪ್ಪು ಸ್ಕ್ರೀನ್' : lang === 'hi' ? '📸 कैमरा मदद / ब्लैक स्क्रीन' : '📸 Camera Help & Test'}
+          </button>
           <button
             onClick={() => processVoiceCommand('mandi rate')}
             className="text-xs font-bold px-3 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 transition-all text-left"

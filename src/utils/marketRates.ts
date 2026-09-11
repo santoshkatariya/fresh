@@ -184,9 +184,10 @@ export function calculateRealTimePriceComparison(params: {
   } = params;
 
   // Find matching commodity
+  const safeCrop = (crop || '').toLowerCase();
   const comm =
     COMMODITY_MARKET_REGISTRY.find(
-      (c) => c.crop.toLowerCase() === crop.toLowerCase() || crop.toLowerCase().includes(c.crop.toLowerCase())
+      (c) => (c.crop || '').toLowerCase() === safeCrop || safeCrop.includes((c.crop || '').toLowerCase())
     ) || COMMODITY_MARKET_REGISTRY[0];
 
   // Pick selected mandi or default first

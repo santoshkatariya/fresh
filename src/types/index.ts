@@ -8,7 +8,8 @@ export type CropType =
   | 'Mangoes' 
   | 'Pomegranates' 
   | 'Green Chillies' 
-  | 'Capsicum';
+  | 'Capsicum'
+  | 'Bananas';
 
 export type QualityGrade = 'A' | 'B' | 'C' | 'D';
 
@@ -69,10 +70,12 @@ export interface ProduceBatch {
   crop: CropType;
   variety: string;
   quantityKg: number;
+  weightKg?: number;
   harvestDate: string;
   harvestTime: string;
   basePricePerKg: number;
   currentQualityScore: number; // 0 - 100
+  qualityScore?: number;
   freshnessPercent: number; // 0 - 100
   ripenessPercent: number; // 0 - 100
   damagePercent: number; // 0 - 100
@@ -84,6 +87,8 @@ export interface ProduceBatch {
   status: 'available' | 'reserved' | 'in_transit' | 'sold' | 'processed' | 'stored';
   storageType: 'ambient' | 'ventilated' | 'cold_storage';
   createdAt: string;
+  category?: 'vegetable' | 'fruit' | 'grain' | 'spice';
+  targetPricePerKg?: number;
 }
 
 export interface Vehicle {
@@ -111,6 +116,7 @@ export interface VehicleOption {
   netProfit: number;
   co2Kg: number;
   isBestProfit: boolean;
+  isRecommended?: boolean;
   whyRecommended?: string;
 }
 
@@ -119,11 +125,14 @@ export interface BuyerMatch {
   name: string;
   companyName: string;
   businessType: 'Retail Chain' | 'Food Processor' | 'Mandir/Catering Wholesale' | 'Quick-Commerce Dark Store' | 'Export House';
+  buyerType?: string;
   location: string;
   distanceKm: number;
   demandedCrops: CropType[];
   offeredPricePerKg: number;
   minQualityScore: number;
+  requiredQualityScore?: number;
+  demandQuantityKg?: number;
   paymentTerms: string;
   reliabilityRating: number; // e.g. 4.9
   aiMatchScore: number; // percentage e.g. 96

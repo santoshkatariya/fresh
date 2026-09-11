@@ -9,6 +9,7 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | string;
   id?: string;
 }
 
@@ -18,6 +19,7 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   children,
   maxWidth = 'lg',
+  size,
   id = 'custom-modal'
 }) => {
   useEffect(() => {
@@ -34,6 +36,7 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen, onClose]);
 
+  const effectiveSize = (size || maxWidth) as 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   const maxWidths = {
     sm: 'max-w-sm',
     md: 'max-w-md',
@@ -62,7 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={scaleIn.animate}
             exit={scaleIn.exit}
             transition={scaleIn.transition}
-            className={`relative w-full ${maxWidths[maxWidth]} bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden z-10 my-8 text-stone-900`}
+            className={`relative w-full ${maxWidths[effectiveSize] || 'max-w-lg'} bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden z-10 my-8 text-stone-900`}
           >
             {title && (
               <div className="flex items-center justify-between px-6 py-4.5 border-b border-stone-200 bg-stone-50/80">

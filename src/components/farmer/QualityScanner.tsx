@@ -35,7 +35,37 @@ import { speakKisanGuidance, stopKisanSpeech } from '../../utils/kisanVoice';
 
 interface QualityScannerProps {
   onScanComplete?: (batch: ProduceBatch) => void;
+  autoStartCamera?: boolean;
 }
+
+// Virtual Camera Field Feeds for testing when device camera is restricted or absent
+const VIRTUAL_CAMERA_FEEDS = [
+  {
+    name: 'Fresh Hybrid Tomatoes (Grade-A)',
+    image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80',
+    crop: 'Tomatoes' as CropType,
+  },
+  {
+    name: 'Solapur Bhagwa Pomegranates (Export)',
+    image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
+    crop: 'Pomegranates' as CropType,
+  },
+  {
+    name: 'Ratnagiri Alphonso Mangoes',
+    image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=800&q=80',
+    crop: 'Mangoes' as CropType,
+  },
+  {
+    name: 'Thompson Seedless Grapes',
+    image: 'https://images.unsplash.com/photo-1596363505729-4190a9506133?auto=format&fit=crop&w=800&q=80',
+    crop: 'Grapes' as CropType,
+  },
+  {
+    name: 'Nashik Dark Red Onions',
+    image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=800&q=80',
+    crop: 'Onions' as CropType,
+  },
+];
 
 // 6 realistic agricultural presets demonstrating various harvest health & pest conditions
 const PRESET_SAMPLES: Record<string, {
@@ -322,7 +352,7 @@ const PRESET_SAMPLES: Record<string, {
   }
 };
 
-export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }) => {
+export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete, autoStartCamera }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -332,6 +362,8 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
   const [cameraState, setCameraState] = useState<'idle' | 'requesting' | 'active' | 'denied' | 'unsupported'>('idle');
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [isVirtualCamera, setIsVirtualCamera] = useState<boolean>(false);
+  const [virtualCropIndex, setVirtualCropIndex] = useState<number>(0);
 
   // Scanning & Analysis State
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
@@ -347,6 +379,30 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  // Safe ref assignment ensuring stream attachment on mount
+  const setVideoRef = (el: HTMLVideoElement | null) => {
+    (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = el;
+    if (el && streamRef.current && !isVirtualCamera) {
+      el.srcObject = streamRef.current;
+      el.play().catch((err) => console.warn('Camera video play error on ref mount:', err));
+    }
+  };
+
+  // Sync video element whenever cameraState or stream becomes active
+  useEffect(() => {
+    if (cameraState === 'active' && !isVirtualCamera && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch((err) => console.warn('Camera video play error in effect:', err));
+    }
+  }, [cameraState, isVirtualCamera]);
+
+  // Auto-start camera if requested by caller
+  useEffect(() => {
+    if (autoStartCamera && cameraState === 'idle') {
+      startCamera();
+    }
+  }, [autoStartCamera]);
+
   // Cleanup camera stream on unmount
   useEffect(() => {
     return () => {
@@ -361,52 +417,98 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
+    setIsVirtualCamera(false);
     setCameraState('idle');
   };
 
-  // Start live camera with permissions management
+  // Start live camera with progressive fallback
   const startCamera = async (mode: 'environment' | 'user' = facingMode) => {
     stopCameraStream();
     setCameraError(null);
+    setIsVirtualCamera(false);
     setCameraState('requesting');
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setCameraState('unsupported');
-      setCameraError('Camera API is not supported on this browser/device.');
+      setCameraError('Direct camera API is not supported in this browser. You can test with our Virtual Field Camera.');
       return;
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: mode,
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-        audio: false,
-      });
+      let stream: MediaStream | null = null;
+      let accessErr: any = null;
+
+      // 1. Try ideal HD with preferred facing mode
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: mode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      } catch (e1) {
+        console.warn('HD camera constraint failed, trying basic facingMode:', e1);
+        try {
+          // 2. Try basic facingMode
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: mode },
+            audio: false,
+          });
+        } catch (e2) {
+          console.warn('facingMode failed, trying generic video=true:', e2);
+          try {
+            // 3. Try generic video
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: false,
+            });
+          } catch (e3) {
+            accessErr = e3;
+          }
+        }
+      }
+
+      if (!stream) {
+        throw accessErr || new Error('Unable to obtain video stream');
+      }
 
       streamRef.current = stream;
+      setCameraState('active');
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        await videoRef.current.play().catch(() => {});
       }
-      setCameraState('active');
     } catch (err: any) {
       console.warn('Camera access error:', err);
       setCameraState('denied');
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setCameraError('Camera permission was denied. Please allow camera access in your browser address bar.');
+        setCameraError('Camera access was blocked. Check browser address bar permissions, or use the Virtual Field Camera Simulator.');
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        setCameraError('No camera found on this device. You can upload photos or choose a preset.');
+        setCameraError('No physical camera device detected on this device. You can test grading with our Virtual Field Camera.');
       } else {
-        setCameraError(`Camera could not be started: ${err.message || 'Unknown error'}`);
+        setCameraError(`Camera could not be started: ${err.message || 'Device error'}. You can test with our Virtual Field Camera.`);
       }
     }
   };
 
-  // Switch between front and back camera
+  // Launch Virtual Field Camera (works in 100% of environments)
+  const startVirtualCamera = (cropIdx: number = 0) => {
+    stopCameraStream();
+    setCameraError(null);
+    setVirtualCropIndex(cropIdx);
+    setIsVirtualCamera(true);
+    setCameraState('active');
+  };
+
+  // Switch between front and back camera or switch virtual feed
   const toggleCameraFacingMode = () => {
+    if (isVirtualCamera) {
+      setVirtualCropIndex((prev) => (prev + 1) % VIRTUAL_CAMERA_FEEDS.length);
+      return;
+    }
     const newMode = facingMode === 'environment' ? 'user' : 'environment';
     setFacingMode(newMode);
     if (cameraState === 'active') {
@@ -414,8 +516,17 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
     }
   };
 
-  // Capture frame from active video stream
+  // Capture frame from active video stream or virtual feed
   const captureCameraSnapshot = () => {
+    if (isVirtualCamera) {
+      const currentFeed = VIRTUAL_CAMERA_FEEDS[virtualCropIndex];
+      stopCameraStream();
+      setCurrentImage(currentFeed.image);
+      setSelectedPresetKey('');
+      runAIClassification(currentFeed.image, currentFeed.crop);
+      return;
+    }
+
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
@@ -731,23 +842,40 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
 
             {/* Viewfinder Stage Area */}
             <div className="relative h-80 sm:h-96 w-full rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner flex items-center justify-center">
-              {/* LIVE CAMERA STREAM */}
+              {/* LIVE CAMERA STREAM OR VIRTUAL SIMULATOR */}
               {cameraState === 'active' && (
                 <div className="relative w-full h-full">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
+                  {!isVirtualCamera ? (
+                    <video
+                      ref={setVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <img
+                        src={VIRTUAL_CAMERA_FEEDS[virtualCropIndex].image}
+                        alt="Virtual camera target feed"
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Virtual Camera Laser Sweep Effect */}
+                      <motion.div
+                        initial={{ top: '0%' }}
+                        animate={{ top: '100%' }}
+                        transition={{ repeat: Infinity, duration: 2.2, ease: 'linear' }}
+                        className="absolute left-0 right-0 h-1 bg-[#A8D94C] shadow-[0_0_24px_#A8D94C] pointer-events-none"
+                      />
+                    </div>
+                  )}
 
                   {/* Optical Reticle Crosshairs HUD */}
                   <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-8">
                     <div className="w-48 h-48 sm:w-56 sm:h-56 border-2 border-dashed border-[#A8D94C]/70 rounded-3xl relative flex items-center justify-center animate-pulse">
                       <div className="w-3 h-3 bg-[#A8D94C] rounded-full" />
                       <span className="absolute -top-3 left-4 bg-[#0B3D2E] text-[#A8D94C] text-[10px] font-black px-2 py-0.5 rounded-full border border-[#A8D94C]/40">
-                        ALIGN CROP IN RETICLE
+                        {isVirtualCamera ? 'VIRTUAL SENSOR 1080p' : 'ALIGN CROP IN RETICLE'}
                       </span>
                     </div>
                   </div>
@@ -756,31 +884,45 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-auto">
                     <span className="bg-black/70 backdrop-blur-sm text-emerald-400 text-[11px] font-black px-2.5 py-1 rounded-full border border-emerald-500/40 flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                      LIVE FEED ACTIVE
+                      {isVirtualCamera
+                        ? `VIRTUAL CAMERA • ${VIRTUAL_CAMERA_FEEDS[virtualCropIndex].name}`
+                        : 'LIVE DEVICE FEED ACTIVE'}
                     </span>
 
                     <button
                       onClick={toggleCameraFacingMode}
-                      className="p-2 rounded-full bg-black/70 text-white hover:bg-black/90 border border-white/20 shadow-md"
-                      title={t('scanner.cameraSwitch')}
+                      className="p-2 rounded-full bg-black/70 text-white hover:bg-black/90 border border-white/20 shadow-md flex items-center gap-1 text-xs font-bold"
+                      title={isVirtualCamera ? 'Switch crop demo' : t('scanner.cameraSwitch')}
                     >
                       <SwitchCamera className="w-4 h-4" />
+                      {isVirtualCamera && <span className="text-[10px]">Next Crop</span>}
                     </button>
                   </div>
 
                   {/* Camera Bottom Capture Bar */}
-                  <div className="absolute bottom-4 inset-x-0 flex items-center justify-center gap-3 px-4">
+                  <div className="absolute bottom-4 inset-x-0 flex items-center justify-center gap-2 sm:gap-3 px-3">
                     <button
                       onClick={stopCameraStream}
-                      className="px-3.5 py-2 rounded-xl bg-stone-900/80 text-stone-300 hover:text-white text-xs font-bold border border-white/20 backdrop-blur-sm flex items-center gap-1.5"
+                      className="px-3 py-2 rounded-xl bg-stone-900/80 text-stone-300 hover:text-white text-xs font-bold border border-white/20 backdrop-blur-sm flex items-center gap-1.5"
                     >
                       <VideoOff className="w-3.5 h-3.5" />
                       {t('scanner.cameraStop')}
                     </button>
 
+                    {isVirtualCamera && (
+                      <button
+                        onClick={() => startCamera()}
+                        className="px-3 py-2 rounded-xl bg-[#0B3D2E]/90 text-white hover:bg-[#0B3D2E] text-xs font-bold border border-[#A8D94C]/30 backdrop-blur-sm flex items-center gap-1.5"
+                        title="Switch to physical hardware camera"
+                      >
+                        <Camera className="w-3.5 h-3.5 text-[#A8D94C]" />
+                        <span className="hidden sm:inline">Use Hardware Cam</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={captureCameraSnapshot}
-                      className="px-6 py-2.5 rounded-2xl bg-[#18A558] hover:bg-[#158f4c] text-white text-sm font-black shadow-xl flex items-center gap-2 border border-white/30 transform active:scale-95 transition-transform"
+                      className="px-5 sm:px-6 py-2.5 rounded-2xl bg-[#18A558] hover:bg-[#158f4c] text-white text-xs sm:text-sm font-black shadow-xl flex items-center gap-2 border border-white/30 transform active:scale-95 transition-transform"
                     >
                       <Camera className="w-4 h-4 text-[#A8D94C]" />
                       {t('scanner.cameraCapture')}
@@ -806,16 +948,23 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
                   <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
                     <AlertTriangle className="w-6 h-6" />
                   </div>
-                  <h4 className="text-sm font-black text-white">Camera Access Restricted</h4>
+                  <h4 className="text-sm font-black text-white">Camera Access Notice</h4>
                   <p className="text-xs text-rose-200">{cameraError || t('scanner.cameraPermissionDenied')}</p>
                   <div className="pt-2 flex flex-col gap-2">
+                    <button
+                      onClick={() => startVirtualCamera(0)}
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#18A558] hover:bg-[#158f4c] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#A8D94C]" />
+                      <span>Launch Virtual Field Camera (Guaranteed)</span>
+                    </button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => startCamera()}
-                      className="text-white border-white/30 hover:bg-white/10"
+                      className="text-white border-white/30 hover:bg-white/10 text-xs"
                     >
-                      Try Requesting Camera Again
+                      Try Requesting Physical Camera Again
                     </Button>
                   </div>
                 </div>
@@ -907,7 +1056,7 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
             </div>
 
             {/* Viewfinder Bottom Action Controls */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
               {/* Open Camera Button */}
               <button
                 onClick={() => startCamera()}
@@ -915,6 +1064,16 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
               >
                 <Camera className="w-4 h-4 text-[#A8D94C]" />
                 <span>{t('scanner.cameraStart')}</span>
+              </button>
+
+              {/* Virtual Camera Button */}
+              <button
+                onClick={() => startVirtualCamera(0)}
+                className="py-2.5 px-3 rounded-xl bg-[#18A558] hover:bg-[#158f4c] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                title="Test with Virtual Field Camera (instant live simulation)"
+              >
+                <Sparkles className="w-4 h-4 text-[#A8D94C]" />
+                <span>Virtual Cam</span>
               </button>
 
               {/* Upload Image Button */}
@@ -935,7 +1094,7 @@ export const QualityScanner: React.FC<QualityScannerProps> = ({ onScanComplete }
               <button
                 onClick={() => runAIClassification(currentImage, 'Selected Crop')}
                 disabled={isAnalyzing}
-                className="col-span-2 sm:col-span-1 py-2.5 px-3 rounded-xl border border-stone-300 hover:bg-stone-100 text-xs font-bold text-[#17201C] flex items-center justify-center gap-1.5 transition-colors"
+                className="py-2.5 px-3 rounded-xl border border-stone-300 hover:bg-stone-100 text-xs font-bold text-[#17201C] flex items-center justify-center gap-1.5 transition-colors"
               >
                 <RotateCcw className={`w-4 h-4 text-stone-600 ${isAnalyzing ? 'animate-spin' : ''}`} />
                 <span>Re-Analyze</span>

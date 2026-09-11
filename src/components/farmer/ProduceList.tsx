@@ -32,11 +32,14 @@ export const ProduceList: React.FC<ProduceListProps> = ({
     setIsAddModalOpen(false);
   };
 
-  const filteredBatches = batches.filter(
-    b =>
-      b.crop.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.variety.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBatches = batches.filter(b => {
+    const search = (searchTerm || '').trim().toLowerCase();
+    if (!search) return true;
+    const cropStr = (b.crop || '').toLowerCase();
+    const varietyStr = (b.variety || '').toLowerCase();
+    const locationStr = (b.farmLocation || (b as any).location || '').toLowerCase();
+    return cropStr.includes(search) || varietyStr.includes(search) || locationStr.includes(search);
+  });
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto" id="farmer-produce-inventory">

@@ -37,7 +37,8 @@ export const speakKisanGuidance = (text: string, langCode: string = 'en'): Promi
       let matchingVoice = null;
 
       for (const pl of preferredLangs) {
-        matchingVoice = voices.find((v) => v.lang.toLowerCase().replace('_', '-').startsWith(pl.toLowerCase()));
+        const safePl = (pl || '').toLowerCase();
+        matchingVoice = voices.find((v) => (v?.lang || '').toLowerCase().replace('_', '-').startsWith(safePl));
         if (matchingVoice) break;
       }
 

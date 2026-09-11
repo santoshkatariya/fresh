@@ -21,6 +21,7 @@ import { QualityVerification } from '../components/buyer/QualityVerification';
 import { DemandPosting } from '../components/buyer/DemandPosting';
 import { StandingOrders } from '../components/buyer/StandingOrders';
 import { getCurrentUser, logoutUser } from '../utils/auth';
+import { ErrorBoundary } from '../components/common/ErrorBoundary';
 
 export const BuyerAppPage: React.FC = () => {
   const { t } = useTranslation();
@@ -168,29 +169,31 @@ export const BuyerAppPage: React.FC = () => {
 
         {/* Tab Views */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          {activeTab === 'dashboard' && (
-            <BuyerDashboard onNavigateTab={handleTabSelect} />
-          )}
+          <ErrorBoundary fallbackTitle="Portal Tab Error" fallbackMessage="Could not load the requested section. Click retry below to reload.">
+            {activeTab === 'dashboard' && (
+              <BuyerDashboard onNavigateTab={handleTabSelect} />
+            )}
 
-          {activeTab === 'standing-orders' && (
-            <StandingOrders />
-          )}
+            {activeTab === 'standing-orders' && (
+              <StandingOrders />
+            )}
 
-          {activeTab === 'marketplace' && (
-            <Marketplace onOrderPlaced={() => handleTabSelect('inbound')} />
-          )}
+            {activeTab === 'marketplace' && (
+              <Marketplace onOrderPlaced={() => handleTabSelect('inbound')} />
+            )}
 
-          {activeTab === 'inbound' && (
-            <IncomingShipments onVerifyDockQuality={() => handleTabSelect('dock-verification')} />
-          )}
+            {activeTab === 'inbound' && (
+              <IncomingShipments onVerifyDockQuality={() => handleTabSelect('dock-verification')} />
+            )}
 
-          {activeTab === 'dock-verification' && (
-            <QualityVerification />
-          )}
+            {activeTab === 'dock-verification' && (
+              <QualityVerification />
+            )}
 
-          {activeTab === 'demands' && (
-            <DemandPosting />
-          )}
+            {activeTab === 'demands' && (
+              <DemandPosting />
+            )}
+          </ErrorBoundary>
         </main>
       </div>
     </div>

@@ -14,7 +14,8 @@ const CROP_PERISHABILITY: Record<CropType, CropPerishability> = {
   'Green Chillies': { baseHourlyDecay: 0.75, tempSensitivityFactor: 1.1, qualityFloor: 45 },
   'Pomegranates': { baseHourlyDecay: 0.45, tempSensitivityFactor: 0.8, qualityFloor: 50 },
   'Onions': { baseHourlyDecay: 0.20, tempSensitivityFactor: 0.5, qualityFloor: 60 },
-  'Potatoes': { baseHourlyDecay: 0.15, tempSensitivityFactor: 0.4, qualityFloor: 65 }
+  'Potatoes': { baseHourlyDecay: 0.15, tempSensitivityFactor: 0.4, qualityFloor: 65 },
+  'Bananas': { baseHourlyDecay: 0.90, tempSensitivityFactor: 1.35, qualityFloor: 35 }
 };
 
 export function calculateSpoilageRate(

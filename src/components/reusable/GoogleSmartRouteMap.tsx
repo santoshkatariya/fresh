@@ -536,7 +536,6 @@ export const GoogleSmartRouteMap: React.FC<GoogleSmartRouteMapProps> = ({
         {apiKey ? (
           <APIProvider
             apiKey={apiKey}
-            internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
           >
             <Map
               style={{ width: '100%', height: '100%' }}

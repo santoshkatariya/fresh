@@ -127,9 +127,10 @@ export const MandiPriceRadar: React.FC<MandiPriceRadarProps> = ({
   }, [selectedCrop, selectedWeightKg, selectedQualityScore, selectedMandiId, selectedTargetCity, lang]);
 
   // Find active commodity details
+  const safeSelectedCrop = (selectedCrop || '').toLowerCase();
   const activeCommodity =
     COMMODITY_MARKET_REGISTRY.find(
-      (c) => c.crop.toLowerCase() === selectedCrop.toLowerCase() || selectedCrop.toLowerCase().includes(c.crop.toLowerCase())
+      (c) => (c.crop || '').toLowerCase() === safeSelectedCrop || safeSelectedCrop.includes((c.crop || '').toLowerCase())
     ) || COMMODITY_MARKET_REGISTRY[0];
 
   // Spoken voice guidance

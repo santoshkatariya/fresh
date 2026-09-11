@@ -35,6 +35,7 @@ export const INITIAL_BATCHES: ProduceBatch[] = [
     detectedIssues: ['Minor surface skin bruising on ~8%', 'Optimal table ripeness (turning red)', 'Firmness index 7.8/10'],
     imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80',
     status: 'available',
+    category: 'vegetable',
     storageType: 'ambient',
     createdAt: new Date().toISOString()
   },
@@ -49,6 +50,7 @@ export const INITIAL_BATCHES: ProduceBatch[] = [
     harvestDate: '2026-08-21',
     harvestTime: '08:00 AM',
     basePricePerKg: 18,
+    category: 'vegetable',
     currentQualityScore: 92,
     freshnessPercent: 95,
     ripenessPercent: 90,
@@ -72,6 +74,7 @@ export const INITIAL_BATCHES: ProduceBatch[] = [
     harvestDate: '2026-08-23',
     harvestTime: '05:45 AM',
     basePricePerKg: 65,
+    category: 'fruit',
     currentQualityScore: 86,
     freshnessPercent: 90,
     ripenessPercent: 88,
@@ -103,9 +106,135 @@ export const INITIAL_BATCHES: ProduceBatch[] = [
     spoilageRiskPercent: 22,
     detectedIssues: ['Deep green luster', 'Slight calyx wilting observed', 'Mild surface scarring from handling'],
     imageUrl: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=800&q=80',
+    category: 'vegetable',
     status: 'available',
     storageType: 'ambient',
     createdAt: new Date(Date.now() - 3600000 * 18).toISOString()
+  },
+  {
+    id: 'batch-potato-05',
+    farmerId: 'farmer-suresh-02',
+    farmerName: 'Suresh More',
+    farmLocation: 'Manchar, Pune, Maharashtra',
+    crop: 'Potatoes',
+    variety: 'Kufri Jyoti Table Grade',
+    quantityKg: 2200,
+    harvestDate: '2026-08-20',
+    harvestTime: '07:00 AM',
+    basePricePerKg: 18,
+    targetPricePerKg: 18,
+    category: 'vegetable',
+    currentQualityScore: 88,
+    freshnessPercent: 92,
+    ripenessPercent: 90,
+    damagePercent: 6,
+    estimatedShelfLifeHours: 480,
+    spoilageRiskPercent: 8,
+    detectedIssues: ['Clean smooth tuber skin', 'Zero greening or solanine detected', 'Moisture balance optimal'],
+    imageUrl: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+    storageType: 'ventilated',
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
+  },
+  {
+    id: 'batch-chilli-06',
+    farmerId: 'farmer-anand-03',
+    farmerName: 'Anand Shinde',
+    farmLocation: 'Baramati, Pune, Maharashtra',
+    crop: 'Green Chillies',
+    variety: 'G-4 Fresh Pungent',
+    quantityKg: 400,
+    harvestDate: '2026-08-23',
+    harvestTime: '06:00 AM',
+    basePricePerKg: 34,
+    targetPricePerKg: 34,
+    category: 'vegetable',
+    currentQualityScore: 84,
+    freshnessPercent: 89,
+    ripenessPercent: 86,
+    damagePercent: 8,
+    estimatedShelfLifeHours: 54,
+    spoilageRiskPercent: 12,
+    detectedIssues: ['Firm green pods', 'Turgid calyx intact', 'Optimal capsaicin level'],
+    imageUrl: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+    storageType: 'ambient',
+    createdAt: new Date(Date.now() - 3600000 * 8).toISOString()
+  },
+  {
+    id: 'batch-pomegranate-07',
+    farmerId: 'farmer-dinesh-04',
+    farmerName: 'Dinesh Kadam',
+    farmLocation: 'Solapur, Maharashtra',
+    crop: 'Pomegranates',
+    variety: 'Bhagwa Export Grade',
+    quantityKg: 950,
+    harvestDate: '2026-08-22',
+    harvestTime: '06:45 AM',
+    basePricePerKg: 85,
+    targetPricePerKg: 85,
+    category: 'fruit',
+    currentQualityScore: 94,
+    freshnessPercent: 96,
+    ripenessPercent: 92,
+    damagePercent: 3,
+    estimatedShelfLifeHours: 180,
+    spoilageRiskPercent: 5,
+    detectedIssues: ['Deep ruby red skin', 'High aril juice content', 'Zero bacterial blight spots'],
+    imageUrl: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+    storageType: 'ventilated',
+    createdAt: new Date(Date.now() - 3600000 * 30).toISOString()
+  },
+  {
+    id: 'batch-mango-08',
+    farmerId: 'farmer-vijay-05',
+    farmerName: 'Vijay Sawant',
+    farmLocation: 'Ratnagiri, Konkan, Maharashtra',
+    crop: 'Mangoes',
+    variety: 'Alphonso GI Certified',
+    quantityKg: 650,
+    harvestDate: '2026-08-23',
+    harvestTime: '05:30 AM',
+    basePricePerKg: 125,
+    targetPricePerKg: 125,
+    category: 'fruit',
+    currentQualityScore: 96,
+    freshnessPercent: 98,
+    ripenessPercent: 84,
+    damagePercent: 2,
+    estimatedShelfLifeHours: 96,
+    spoilageRiskPercent: 7,
+    detectedIssues: ['Certified GI origin Ratnagiri', 'Natural tree-matured scent', 'Zero spongy tissue detected'],
+    imageUrl: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+    storageType: 'ambient',
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString()
+  },
+  {
+    id: 'batch-banana-09',
+    farmerId: 'farmer-ramesh-01',
+    farmerName: 'Ramesh Patil',
+    farmLocation: 'Raver, Jalgaon, Maharashtra',
+    crop: 'Bananas',
+    variety: 'Grand Naine (G9) Export Cluster',
+    quantityKg: 3200,
+    harvestDate: '2026-08-23',
+    harvestTime: '06:15 AM',
+    basePricePerKg: 18,
+    targetPricePerKg: 24,
+    category: 'fruit',
+    currentQualityScore: 91,
+    freshnessPercent: 94,
+    ripenessPercent: 78,
+    damagePercent: 4,
+    estimatedShelfLifeHours: 168,
+    spoilageRiskPercent: 8,
+    detectedIssues: ['Clean uniform fingers (7.5 inch minimum)', 'Firm green maturity index 2', 'Zero crown rot or transit abrasion'],
+    imageUrl: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80',
+    status: 'available',
+    storageType: 'ambient',
+    createdAt: new Date(Date.now() - 3600000 * 6).toISOString()
   }
 ];
 
@@ -500,7 +629,26 @@ export const getStoredBatches = (): ProduceBatch[] => {
       localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(INITIAL_BATCHES));
       return INITIAL_BATCHES;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(INITIAL_BATCHES));
+      return INITIAL_BATCHES;
+    }
+    // Clean out nulls, undefined, or malformed entries
+    const sanitized = parsed.filter(b => b && typeof b === 'object' && b.id && b.crop);
+    if (sanitized.length === 0) {
+      localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(INITIAL_BATCHES));
+      return INITIAL_BATCHES;
+    }
+    // If stored array is small (e.g. from old version), supplement missing initial batches
+    const existingIds = new Set(sanitized.map(b => b.id));
+    const merged = [...sanitized];
+    for (const initBatch of INITIAL_BATCHES) {
+      if (!existingIds.has(initBatch.id)) {
+        merged.push(initBatch);
+      }
+    }
+    return merged;
   } catch {
     return INITIAL_BATCHES;
   }

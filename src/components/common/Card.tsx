@@ -53,9 +53,9 @@ export const Card: React.FC<CardProps> = ({
   }
 
   const Component = hoverEffect ? motion.div : 'div';
-  const motionProps = hoverEffect
+  const motionProps: any = hoverEffect
     ? {
-        whileHover: { y: -3, transition: { duration: 0.18, ease: [0.25, 0.1, 0.25, 1.0] } },
+        whileHover: { y: -3, transition: { duration: 0.18, ease: "easeOut" } },
         whileTap: { scale: 0.99 }
       }
     : {};

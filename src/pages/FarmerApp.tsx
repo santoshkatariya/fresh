@@ -20,7 +20,10 @@ import {
   X,
   Mic,
   Volume2,
-  Scale
+  Scale,
+  BookOpen,
+  HelpCircle,
+  Sparkles
 } from 'lucide-react';
 import { Sidebar } from '../components/common/Sidebar';
 import { LanguageSelector } from '../components/common/LanguageSelector';
@@ -51,6 +54,7 @@ export const FarmerAppPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(pathSegment.split('/')[0] || 'dashboard');
   const [activeBatchId, setActiveBatchId] = useState<string | undefined>(undefined);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const mainContainerRef = useRef<HTMLElement>(null);
 
   const [farmerMode, setFarmerMode] = useState<'simple' | 'detailed'>(() => {
@@ -198,6 +202,23 @@ export const FarmerAppPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
+            {/* AI Farmer Guide & Camera Help Trigger Button */}
+            <button
+              onClick={() => setIsAssistantOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#0B3D2E] border border-emerald-300 shadow-2xs text-xs font-black transition-all hover:scale-102 active:scale-98"
+              title="How to use FreshRoute & Camera Help"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#18A558] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#18A558]"></span>
+              </span>
+              <BookOpen className="w-3.5 h-3.5 text-[#18A558]" />
+              <span className="hidden sm:inline">
+                {i18n.language === 'kn' ? 'ಆ್ಯಪ್ ಗೈಡ್ & ಕ್ಯಾಮೆರಾ' : i18n.language === 'hi' ? 'ऐप गाइड व कैमरा' : 'AI Guide & Camera'}
+              </span>
+              <span className="sm:hidden">Guide</span>
+            </button>
+
             <LanguageSelector variant="light" />
 
             <div className="h-6 w-px bg-stone-200 hidden sm:block" />
@@ -337,6 +358,8 @@ export const FarmerAppPage: React.FC = () => {
       <KisanVoiceAssistant
         batches={batches}
         onNavigateTab={handleTabSelect}
+        isOpen={isAssistantOpen}
+        onClose={() => setIsAssistantOpen(false)}
       />
     </div>
   );

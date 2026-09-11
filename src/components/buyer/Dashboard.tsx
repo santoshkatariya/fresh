@@ -289,11 +289,11 @@ export const BuyerDashboard: React.FC<BuyerDashboardProps> = ({ onNavigateTab })
 
               <div>
                 <h4 className="text-sm font-bold text-gray-900">{batch.crop} ({batch.variety})</h4>
-                <p className="text-xs text-gray-500">{batch.location} • {batch.quantityKg} KG</p>
+                <p className="text-xs text-gray-500">{batch.farmLocation || (batch as any).location || 'Nashik'} • {batch.quantityKg} KG</p>
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="text-base font-extrabold text-blue-900">₹{batch.targetPricePerKg}/kg</span>
+                <span className="text-base font-extrabold text-[#0B3D2E]">₹{(batch as any).targetPricePerKg || batch.basePricePerKg}/kg</span>
                 <Button
                   variant="outline"
                   size="sm"
