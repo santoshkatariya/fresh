@@ -4,6 +4,12 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import { db } from './server/db.js';
 import { whatsappRouter } from './server/whatsapp/routes.js';
+import {
+  initMySQL,
+  getMySQLStatus,
+  MYSQL_SCHEMA_SQL,
+  syncAllToMySQL,
+} from './server/mysql.js';
 
 let genAIClient: GoogleGenAI | null = null;
 
@@ -29,6 +35,15 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Initialize MySQL database connection asynchronously (with automatic local fallback)
+  initMySQL().then((connected) => {
+    if (connected) {
+      console.log('📦 MySQL connection pool ready and tables verified.');
+    }
+  }).catch((err) => {
+    console.warn('MySQL initialization notice:', err.message);
+  });
+
   // Body parsing for JSON with support for captured camera base64 images
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
@@ -37,11 +52,12 @@ async function startServer() {
   app.use('/api/whatsapp', whatsappRouter);
 
   // Health check API with comprehensive system & database telemetry
-  app.get('/api/health', (req, res) => {
+  app.get('/api/health', async (req, res) => {
     const batches = db.getBatches();
     const orders = db.getOrders();
     const users = db.getUsers();
     const buyers = db.getBuyers();
+    const mysqlStatus = await getMySQLStatus();
 
     res.json({
       status: 'ok',
@@ -49,17 +65,53 @@ async function startServer() {
       port: PORT,
       hasGeminiApiKey: Boolean(process.env.GEMINI_API_KEY),
       database: {
-        type: 'Persistent JSON Store',
-        path: 'data/db.json',
-        counts: {
-          batches: batches.length,
-          orders: orders.length,
-          users: users.length,
-          buyers: buyers.length,
+        primary: mysqlStatus.connected ? 'MySQL 8.x Relational Store' : 'Local Persistent Store (Fallback)',
+        mysql: mysqlStatus,
+        localJsonStore: {
+          path: 'data/db.json',
+          counts: {
+            batches: batches.length,
+            orders: orders.length,
+            users: users.length,
+            buyers: buyers.length,
+          },
         },
       },
       timestamp: new Date().toISOString(),
     });
+  });
+
+  // MySQL Status & Telemetry API
+  app.get('/api/mysql/status', async (req, res) => {
+    try {
+      const status = await getMySQLStatus();
+      res.json(status);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Download or view exact MySQL Schema DDL
+  app.get('/api/mysql/schema.sql', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Content-Disposition', 'inline; filename="freshroute_schema.sql"');
+    res.send(MYSQL_SCHEMA_SQL);
+  });
+
+  // Manual or automatic sync of all local records to MySQL
+  app.post('/api/mysql/sync', async (req, res) => {
+    try {
+      const result = await syncAllToMySQL(
+        db.getBatches(),
+        db.getOrders(),
+        db.getUsers(),
+        db.getBuyers(),
+        db.getDemands()
+      );
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
   });
 
   // AI Produce Spoilage & Pest Detection API

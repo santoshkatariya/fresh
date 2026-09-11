@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Leaf, Menu, X, ArrowRight, Sparkles, UserCheck, ShieldCheck, Tractor, ShoppingCart } from 'lucide-react';
+import { Leaf, Menu, X, ArrowRight, Sparkles, UserCheck, ShieldCheck, Tractor, ShoppingCart, Database } from 'lucide-react';
 import { Button } from './Button';
 import { LanguageSelector } from './LanguageSelector';
 import { getCurrentUser } from '../../utils/auth';
+import { MySQLModal } from './MySQLModal';
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMySQLModalOpen, setIsMySQLModalOpen] = useState(false);
   const currentUser = getCurrentUser();
 
   const isAppRoute = location.pathname.startsWith('/farmer') || location.pathname.startsWith('/buyer');
@@ -71,6 +73,18 @@ export const Navbar: React.FC = () => {
 
           {/* Actions & Controls */}
           <div className="hidden sm:flex items-center gap-3">
+            {/* MySQL Database Status Trigger */}
+            <button
+              onClick={() => setIsMySQLModalOpen(true)}
+              id="navbar-mysql-status-btn"
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 flex items-center gap-1.5 transition-colors shadow-2xs"
+              title="View MySQL Database connection and schema"
+            >
+              <Database className="w-3.5 h-3.5 text-emerald-600" />
+              <span>MySQL</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </button>
+
             <LanguageSelector variant="light" />
 
             {!isAppRoute ? (
@@ -169,9 +183,22 @@ export const Navbar: React.FC = () => {
                 Buyer Portal (ಖರೀದಿದಾರ / खरीदार)
               </Button>
             </Link>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setIsMySQLModalOpen(true);
+              }}
+              className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-center gap-2"
+            >
+              <Database className="w-4 h-4 text-emerald-600" />
+              MySQL Database Status & Schema
+            </button>
           </div>
         </div>
       )}
+
+      {/* MySQL Connection & Schema Management Modal */}
+      <MySQLModal isOpen={isMySQLModalOpen} onClose={() => setIsMySQLModalOpen(false)} />
     </header>
   );
 };

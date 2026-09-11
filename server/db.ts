@@ -1,6 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { WhatsAppConversationState, WhatsAppWebhookLog } from './whatsapp/types.js';
+import {
+  saveBatchToMySQL,
+  saveOrderToMySQL,
+  saveWhatsAppConversationToMySQL,
+  saveWhatsAppLogToMySQL,
+} from './mysql.js';
 
 export interface User {
   id: string;
@@ -522,6 +528,7 @@ class Database {
   createBatch(batch: Batch) {
     this.data.batches.unshift(batch);
     this.persist();
+    saveBatchToMySQL(batch).catch((e) => console.warn('MySQL batch sync notice:', e.message));
     return batch;
   }
 
@@ -530,6 +537,7 @@ class Database {
     if (idx >= 0) {
       this.data.batches[idx] = { ...this.data.batches[idx], ...updates };
       this.persist();
+      saveBatchToMySQL(this.data.batches[idx]).catch((e) => console.warn('MySQL batch sync notice:', e.message));
       return this.data.batches[idx];
     }
     return null;
@@ -572,6 +580,7 @@ class Database {
       (this.data.impact.foodWastePreventedTons + (order.quantityKg / 1000) * 0.9).toFixed(1)
     );
     this.persist();
+    saveOrderToMySQL(order).catch((e) => console.warn('MySQL order sync notice:', e.message));
     return order;
   }
 
@@ -602,6 +611,7 @@ class Database {
     }
 
     this.persist();
+    saveOrderToMySQL(order).catch((e) => console.warn('MySQL order status sync notice:', e.message));
     return order;
   }
 
@@ -640,6 +650,7 @@ class Database {
     if (!this.data.whatsappConversations) this.data.whatsappConversations = {};
     this.data.whatsappConversations[phone] = state;
     this.persist();
+    saveWhatsAppConversationToMySQL(phone, state).catch((e) => console.warn('MySQL WA session sync notice:', e.message));
   }
 
   resetWhatsAppConversation(phone: string, language: 'en' | 'hi' | 'kn' = 'en'): WhatsAppConversationState {
@@ -669,6 +680,7 @@ class Database {
       this.data.whatsappLogs = this.data.whatsappLogs.slice(0, 200);
     }
     this.persist();
+    saveWhatsAppLogToMySQL(log).catch((e) => console.warn('MySQL WA log sync notice:', e.message));
   }
 
   clearWhatsAppLogs(): void {
