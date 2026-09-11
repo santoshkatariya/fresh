@@ -22,7 +22,8 @@ import {
   Layers,
   AlertCircle,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  MessageSquare
 } from 'lucide-react';
 import { ProduceBatch, Order, BuyerMatch } from '../../types';
 import { getStoredBatches, getStoredOrders, getStoredBuyers, saveOrders } from '../../utils/storage';
@@ -252,15 +253,28 @@ export const SaralKisanView: React.FC<SaralKisanViewProps> = ({
           </div>
         </div>
 
-        {/* Switch to Detailed FPO mode button */}
-        <button
-          onClick={onSwitchToDetailed}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs flex items-center justify-center gap-2 border border-stone-300 transition-all active:scale-[0.98]"
-        >
-          <Layers className="w-4 h-4 text-stone-600" />
-          <span>{lang === 'kn' ? 'ವಿವರವಾದ ತಜ್ಞರ ಮೋಡ್ (Detailed FPO)' : lang === 'hi' ? 'विस्तृत FPO मोड' : 'Switch to Detailed FPO Mode'}</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        {/* Header Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* WhatsApp Assistant Button */}
+          <button
+            id="btn-saral-whatsapp"
+            onClick={() => onNavigateTab('whatsapp')}
+            className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-[#075e54] hover:bg-[#064e46] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
+          >
+            <MessageSquare className="w-4 h-4 text-emerald-300" />
+            <span>{lang === 'kn' ? 'WhatsApp ಕಿಸಾನ್ AI' : lang === 'hi' ? 'व्हाट्सएप किसान AI' : 'WhatsApp AI Assistant'}</span>
+          </button>
+
+          {/* Switch to Detailed FPO mode button */}
+          <button
+            onClick={onSwitchToDetailed}
+            className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs flex items-center justify-center gap-2 border border-stone-300 transition-all active:scale-[0.98]"
+          >
+            <Layers className="w-4 h-4 text-stone-600" />
+            <span>{lang === 'kn' ? 'ವಿವರವಾದ ತಜ್ಞರ ಮೋಡ್ (Detailed FPO)' : lang === 'hi' ? 'विस्तृत FPO मोड' : 'Switch to Detailed FPO Mode'}</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Batch Selector (If farmer has multiple batches) */}

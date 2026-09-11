@@ -3,6 +3,7 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import { db } from './server/db.js';
+import { whatsappRouter } from './server/whatsapp/routes.js';
 
 let genAIClient: GoogleGenAI | null = null;
 
@@ -31,6 +32,9 @@ async function startServer() {
   // Body parsing for JSON with support for captured camera base64 images
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+
+  // Meta WhatsApp Cloud API & Farmer Assistant Webhook Routes
+  app.use('/api/whatsapp', whatsappRouter);
 
   // Health check API with comprehensive system & database telemetry
   app.get('/api/health', (req, res) => {

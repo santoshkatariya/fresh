@@ -5,6 +5,7 @@ import { FarmerAuthPage } from './pages/FarmerAuth';
 import { BuyerAuthPage } from './pages/BuyerAuth';
 import { FarmerAppPage } from './pages/FarmerApp';
 import { BuyerAppPage } from './pages/BuyerApp';
+import { WhatsAppPage } from './pages/WhatsAppPage';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 export default function App() {
@@ -30,6 +31,9 @@ export default function App() {
           {/* Buyer Portal & Tabs */}
           <Route path="/buyer" element={<Navigate to="/buyer/dashboard" replace />} />
           <Route path="/buyer/*" element={<BuyerAppPage />} />
+
+          {/* WhatsApp Farmer AI Assistant */}
+          <Route path="/whatsapp" element={<WhatsAppPage />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<Navigate to="/" replace />} />

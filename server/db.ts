@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { WhatsAppConversationState, WhatsAppWebhookLog } from './whatsapp/types.js';
 
 export interface User {
   id: string;
@@ -124,12 +125,16 @@ export interface DatabaseSchema {
   demands: Demand[];
   impact: ImpactStats;
   otps: Record<string, { code: string; expiresAt: number }>;
+  whatsappConversations: Record<string, WhatsAppConversationState>;
+  whatsappLogs: WhatsAppWebhookLog[];
 }
 
 const DB_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'db.json');
 
 const INITIAL_DATA: DatabaseSchema = {
+  whatsappConversations: {},
+  whatsappLogs: [],
   users: [
     {
       id: 'farmer-ramesh-01',
@@ -444,7 +449,10 @@ class Database {
       }
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (!parsed.whatsappConversations) parsed.whatsappConversations = {};
+        if (!parsed.whatsappLogs) parsed.whatsappLogs = [];
+        return parsed;
       }
       // Write initial seed data
       fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DATA, null, 2), 'utf8');
@@ -620,6 +628,52 @@ class Database {
   // Impact
   getImpact() {
     return this.data.impact;
+  }
+
+  // WhatsApp Conversation State & Webhook Logs
+  getWhatsAppConversation(phone: string): WhatsAppConversationState | null {
+    if (!this.data.whatsappConversations) this.data.whatsappConversations = {};
+    return this.data.whatsappConversations[phone] || null;
+  }
+
+  saveWhatsAppConversation(phone: string, state: WhatsAppConversationState): void {
+    if (!this.data.whatsappConversations) this.data.whatsappConversations = {};
+    this.data.whatsappConversations[phone] = state;
+    this.persist();
+  }
+
+  resetWhatsAppConversation(phone: string, language: 'en' | 'hi' | 'kn' = 'en'): WhatsAppConversationState {
+    if (!this.data.whatsappConversations) this.data.whatsappConversations = {};
+    const newState: WhatsAppConversationState = {
+      userId: `wa-${phone}`,
+      phone,
+      language,
+      conversationStep: 'IDLE',
+      lastInteraction: new Date().toISOString(),
+    };
+    this.data.whatsappConversations[phone] = newState;
+    this.persist();
+    return newState;
+  }
+
+  getWhatsAppLogs(limit: number = 50): WhatsAppWebhookLog[] {
+    if (!this.data.whatsappLogs) this.data.whatsappLogs = [];
+    return this.data.whatsappLogs.slice(0, limit);
+  }
+
+  addWhatsAppLog(log: WhatsAppWebhookLog): void {
+    if (!this.data.whatsappLogs) this.data.whatsappLogs = [];
+    this.data.whatsappLogs.unshift(log);
+    // Keep max 200 logs to preserve storage performance
+    if (this.data.whatsappLogs.length > 200) {
+      this.data.whatsappLogs = this.data.whatsappLogs.slice(0, 200);
+    }
+    this.persist();
+  }
+
+  clearWhatsAppLogs(): void {
+    this.data.whatsappLogs = [];
+    this.persist();
   }
 }
 

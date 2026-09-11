@@ -31,6 +31,32 @@
   ],
   "batches": [
     {
+      "id": "batch-1789132374463",
+      "farmerId": "farmer-ramesh-01",
+      "farmerName": "Ramesh Patil",
+      "farmLocation": "Niphad, Nashik, Maharashtra",
+      "crop": "Tomatoes",
+      "variety": "Abhinav Hybrid",
+      "quantityKg": 800,
+      "harvestDate": "2026-09-11",
+      "harvestTime": "06:42 pm",
+      "basePricePerKg": 22,
+      "currentQualityScore": 82,
+      "freshnessPercent": 90,
+      "ripenessPercent": 82,
+      "damagePercent": 18,
+      "estimatedShelfLifeHours": 30,
+      "spoilageRiskPercent": 18,
+      "detectedIssues": [
+        "Optimal table firmness index",
+        "Harvest field verified"
+      ],
+      "imageUrl": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80",
+      "status": "available",
+      "storageType": "ambient",
+      "createdAt": "2026-09-11T13:12:56.074Z"
+    },
+    {
       "id": "batch-tomato-01",
       "farmerId": "farmer-ramesh-01",
       "farmerName": "Ramesh Patil",
@@ -53,7 +79,7 @@
         "Firmness index 7.8/10"
       ],
       "imageUrl": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80",
-      "status": "available",
+      "status": "in_transit",
       "storageType": "ambient",
       "createdAt": "2026-09-04T08:01:39.260Z"
     },
@@ -343,6 +369,50 @@
   ],
   "orders": [
     {
+      "id": "ORD-WA-9373",
+      "batchId": "batch-tomato-01",
+      "crop": "Tomatoes",
+      "quantityKg": 500,
+      "qualityScore": 85,
+      "farmerId": "farmer-ramesh-01",
+      "farmerName": "Kisan (WhatsApp)",
+      "farmLocation": "Ramesh Patil Farm, Nashik",
+      "buyerId": "buyer-freshmart-01",
+      "buyerName": "Anil Sharma (Procurement Head)",
+      "buyerLocation": "Bhandup Central DC, Mumbai",
+      "distanceKm": 34,
+      "pricePerKg": 21.5,
+      "totalValue": 10750,
+      "transportCost": 480,
+      "netFarmerEarnings": 10270,
+      "selectedVehicle": "Mini Pickup (Tata Ace)",
+      "status": "Accepted",
+      "estimatedTransitTime": "1h 15m",
+      "temperatureReadingC": 22,
+      "humidityPercent": 78,
+      "createdAt": "2026-09-11T13:41:39.373Z",
+      "timeline": [
+        {
+          "status": "Requested",
+          "timestamp": "Just now",
+          "description": "Confirmed via WhatsApp Assistant",
+          "completed": true
+        },
+        {
+          "status": "Accepted",
+          "timestamp": "Just now",
+          "description": "Buyer accepted escrow procurement contract",
+          "completed": true
+        },
+        {
+          "status": "Pickup Scheduled",
+          "timestamp": "Within 2 hours",
+          "description": "Mini Pickup assigned to farm location",
+          "completed": false
+        }
+      ]
+    },
+    {
       "id": "ORD-2026-8821",
       "batchId": "batch-tomato-01",
       "crop": "Tomatoes",
@@ -501,8 +571,8 @@
     }
   ],
   "impact": {
-    "valueRecoveredINR": 284350,
-    "foodWastePreventedTons": 4.2,
+    "valueRecoveredINR": 294620,
+    "foodWastePreventedTons": 4.7,
     "decisionAccuracyPercent": 91,
     "transportCostSavingsPercent": 18,
     "co2EmissionsSavedKg": 890,
@@ -513,5 +583,262 @@
       "code": "123456",
       "expiresAt": 1788509212136
     }
-  }
+  },
+  "whatsappConversations": {
+    "919822012345": {
+      "userId": "wa-919822012345",
+      "phone": "919822012345",
+      "language": "kn",
+      "conversationStep": "DECISION_PRESENTED",
+      "lastInteraction": "2026-09-11T13:41:39.374Z",
+      "crop": "Tomatoes",
+      "quantityKg": 500,
+      "harvestTime": "Today morning",
+      "location": {
+        "latitude": 20.0059,
+        "longitude": 73.7898,
+        "name": "Ramesh Patil Farm, Nashik",
+        "address": "Field Location"
+      },
+      "lastOrderId": "ORD-WA-9373"
+    }
+  },
+  "whatsappLogs": [
+    {
+      "id": "log-1789134099374-h19c",
+      "timestamp": "2026-09-11T13:41:39.374Z",
+      "phone": "919822012345",
+      "type": "interactive",
+      "intent": "ORDER_CONFIRMED",
+      "incomingSnippet": "Option",
+      "responseSnippet": "🎉 ಅಭಿನಂದನೆಗಳು! ಒಪ್ಪಂದ ದೃಢಪಟ್ಟಿದೆ!\n\nಆರ್ಡರ್ ಸಂಖ್ಯೆ: #ORD-WA-9373\nಖರೀದಿದಾರರು: FreshMart Quick Commerce\nಬೆಳೆ: Tomatoes (500",
+      "status": "SUCCESS",
+      "payload": {
+        "simulated": true
+      },
+      "responsePayload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": "919822012345",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "🎉 ಅಭಿನಂದನೆಗಳು! ಒಪ್ಪಂದ ದೃಢಪಟ್ಟಿದೆ!\n\nಆರ್ಡರ್ ಸಂಖ್ಯೆ: #ORD-WA-9373\nಖರೀದಿದಾರರು: FreshMart Quick Commerce\nಬೆಳೆ: Tomatoes (500 ಕೆಜಿ)\nನಿವ್ವಳ ಸಿಗುವ ಹಣ: ₹10,270\n\n🚚 ವಾಹನ: ಟಾಟಾ ಏಸ್ (2 ಗಂಟೆಯಲ್ಲಿ ತಲುಪಲಿದೆ)\n💰 ಪಾವತಿ: 100% ಎಸ್ಕ್ರೋ ಸುರಕ್ಷಿತ.\n\nಧನ್ಯವಾದಗಳು!"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_MY_ORDERS",
+                  "title": "🚚 📦 ನನ್ನ ಆರ್ಡರ್"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_MAIN_MENU",
+                  "title": "🏠 Main Menu"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "log-1789134097379-t81q",
+      "timestamp": "2026-09-11T13:41:37.379Z",
+      "phone": "919822012345",
+      "type": "text",
+      "intent": "MARKET_PRICE",
+      "incomingSnippet": "ಟೊಮೇಟೊ ದರ ಎಷ್ಟು?",
+      "responseSnippet": "🍅 Tomatoes ಮಾರುಕಟ್ಟೆ ದರ\n\nಹತ್ತಿರದ ಎಪಿಎಂಸಿ (Pimpalgaon APMC Mandi, Nashik):\n• ಕನಿಷ್ಠ ದರ: ₹19.4/ಕೆಜಿ\n• ಸರಾಸರಿ ದರ: ₹22.0/ಕೆ",
+      "status": "SUCCESS",
+      "payload": {
+        "simulated": true
+      },
+      "responsePayload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": "919822012345",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "🍅 Tomatoes ಮಾರುಕಟ್ಟೆ ದರ\n\nಹತ್ತಿರದ ಎಪಿಎಂಸಿ (Pimpalgaon APMC Mandi, Nashik):\n• ಕನಿಷ್ಠ ದರ: ₹19.4/ಕೆಜಿ\n• ಸರಾಸರಿ ದರ: ₹22.0/ಕೆಜಿ\n• ಗರಿಷ್ಠ ದರ: ₹25.1/ಕೆಜಿ\n\n🚀 FreshRoute ನೇರ ಖರೀದಿ ದರ:\n₹34.0/ಕೆಜಿ (ದಲ್ಲಾಳಿ ಕಮಿಷನ್ ಇಲ್ಲ)\n\nದಿನಾಂಕ: 11 Sept 2026\nಮೂಲ: ಸರ್ಕಾರಿ ಅಗ್ರೋ ಮಂಡಿ ಡೇಟಾ"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_FIND_BUYER",
+                  "title": "🤝 🤝 ಖರೀದಿದಾರರು"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_BEST_MARKET",
+                  "title": "🌾 🌾 ಅತ್ಯುತ್ತಮ ಆಯ್ಕ"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_CHECK_PRODUCE",
+                  "title": "📸 📸 ಬೆಳೆ ಪರಿಶೀಲನೆ"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "log-1789134094203-2gd3",
+      "timestamp": "2026-09-11T13:41:34.203Z",
+      "phone": "919822012345",
+      "type": "location",
+      "intent": "LOCATION_RECEIVED",
+      "incomingSnippet": "[LOCATION]",
+      "responseSnippet": "📍 Location received: Ramesh Patil Farm, Nashik\n\n🌾 🌾 BEST OPTION\nBuyer: FreshMart Quick Commerce\nPrice: ₹34/kg\nMandi P",
+      "status": "SUCCESS",
+      "payload": {
+        "simulated": true
+      },
+      "responsePayload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": "919822012345",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "📍 Location received: Ramesh Patil Farm, Nashik\n\n🌾 🌾 BEST OPTION\nBuyer: FreshMart Quick Commerce\nPrice: ₹34/kg\nMandi Price: ₹22/kg\nDistance: 34 km\nTransport: ₹480\n\n💰 Expected money you can get:\n₹17,000\n\nWhy:\n✓ ₹6,000 higher profit than mandi\n✓ Direct farm-gate pickup & escrow payout\n\nWhat would you like to do?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_ACCEPT_BUYER_buyer-freshmart-01",
+                  "title": "✅ Accept"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_FIND_BUYER",
+                  "title": "🔍 Other Options"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_CHECK_PRODUCE",
+                  "title": "📸 📸 Check Produce"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "log-1789134091910-hh1l",
+      "timestamp": "2026-09-11T13:41:31.910Z",
+      "phone": "919822012345",
+      "type": "interactive",
+      "intent": "HARVEST_TIME_SELECTED",
+      "incomingSnippet": "Option",
+      "responseSnippet": "📍 Please share your WhatsApp location so I can find the closest buyers and lowest transport cost.",
+      "status": "SUCCESS",
+      "payload": {
+        "simulated": true
+      },
+      "responsePayload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": "919822012345",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "📍 Please share your WhatsApp location so I can find the closest buyers and lowest transport cost."
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_MAIN_MENU",
+                  "title": "🏠 Main Menu"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_CHECK_PRODUCE",
+                  "title": "📸 Check Produce"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "log-1789134088420-e5vz",
+      "timestamp": "2026-09-11T13:41:28.420Z",
+      "phone": "919822012345",
+      "type": "text",
+      "intent": "PRODUCE_ENTRY",
+      "incomingSnippet": "I have 500 kg tomato",
+      "responseSnippet": "Noted: Tomatoes - 500 kg.\n\nWhen was it harvested?",
+      "status": "SUCCESS",
+      "payload": {
+        "simulated": true
+      },
+      "responsePayload": {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": "919822012345",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Noted: Tomatoes - 500 kg.\n\nWhen was it harvested?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_HARVEST_TODAY",
+                  "title": "Today"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_HARVEST_YESTERDAY",
+                  "title": "Yesterday"
+                }
+              },
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "BTN_HARVEST_2DAYS",
+                  "title": "2 Days Ago"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

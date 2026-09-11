@@ -23,7 +23,8 @@ import {
   Scale,
   BookOpen,
   HelpCircle,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import { Sidebar } from '../components/common/Sidebar';
 import { LanguageSelector } from '../components/common/LanguageSelector';
@@ -39,6 +40,7 @@ import { Orders } from '../components/farmer/Orders';
 import { Impact } from '../components/farmer/Impact';
 import { KisanVoiceAssistant } from '../components/farmer/KisanVoiceAssistant';
 import { SaralKisanView } from '../components/farmer/SaralKisanView';
+import { WhatsAppAssistantView } from '../components/farmer/WhatsAppAssistantView';
 import { getCurrentUser, logoutUser } from '../utils/auth';
 import { getStoredBatches } from '../utils/storage';
 
@@ -84,6 +86,7 @@ export const FarmerAppPage: React.FC = () => {
     { id: 'buyer-matches', label: t('nav.buyerMatches'), icon: Store, path: '/farmer/buyer-matches' },
     { id: 'smart-routes', label: t('nav.routes'), icon: Navigation, path: '/farmer/smart-routes' },
     { id: 'orders', label: t('nav.orders'), icon: Package, path: '/farmer/orders' },
+    { id: 'whatsapp', label: 'WhatsApp Bot', icon: MessageSquare, path: '/farmer/whatsapp' },
     { id: 'impact', label: t('nav.impact'), icon: TrendingUp, path: '/farmer/impact' }
   ];
 
@@ -219,6 +222,22 @@ export const FarmerAppPage: React.FC = () => {
               <span className="sm:hidden">Guide</span>
             </button>
 
+            {/* WhatsApp AI Assistant Quick Header Trigger */}
+            <button
+              id="btn-header-whatsapp-ai"
+              onClick={() => handleTabSelect('whatsapp')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all hover:scale-102 active:scale-98 shadow-2xs ${
+                activeTab === 'whatsapp'
+                  ? 'bg-[#075e54] text-white ring-2 ring-emerald-400'
+                  : 'bg-[#075e54] hover:bg-[#064e46] text-white'
+              }`}
+              title="Open WhatsApp Farmer AI Assistant"
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-300" />
+              <span className="hidden sm:inline">WhatsApp AI</span>
+              <span className="sm:hidden">WhatsApp</span>
+            </button>
+
             <LanguageSelector variant="light" />
 
             <div className="h-6 w-px bg-stone-200 hidden sm:block" />
@@ -344,6 +363,10 @@ export const FarmerAppPage: React.FC = () => {
                 <Orders
                   onTrackOrder={() => handleTabSelect('smart-routes')}
                 />
+              )}
+
+              {activeTab === 'whatsapp' && (
+                <WhatsAppAssistantView />
               )}
 
               {activeTab === 'impact' && (
